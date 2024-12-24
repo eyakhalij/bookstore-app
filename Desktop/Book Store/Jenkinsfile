@@ -12,7 +12,8 @@ pipeline {
         stage('Build') {
             steps {
                 // Build the Docker image with an explicit path to the Dockerfile and build context
-                sh 'docker build -t bookstore-app:latest -f Desktop/Book\ Store/Dockerfile .'
+                // Fixing the path issue by quoting the path
+                sh 'docker build -t bookstore-app:latest -f "Desktop/Book Store/Dockerfile" .'
             }
         }
 
