@@ -11,8 +11,8 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Build the Docker image using the correct context and path to Dockerfile
-                sh 'docker build -t bookstore-app:latest "Desktop/Book Store/"'
+                // Build the Docker image using docker-compose
+                sh 'docker-compose build'
             }
         }
 
@@ -25,8 +25,8 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // Deploy the application (this can vary based on your setup)
-                sh './deploy.sh'
+                // Deploy the application using docker-compose
+                sh 'docker-compose up -d'
             }
         }
     }
