@@ -16,6 +16,8 @@ services:
       - "5000:5000"
     depends_on:
       - mongodb
+    environment:
+      - FLASK_ENV=development  # You can set this to production when ready
 
 volumes:
   mongo_data:

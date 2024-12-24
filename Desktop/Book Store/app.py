@@ -2,14 +2,14 @@ from flask import Flask, jsonify, request, render_template, redirect, url_for
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
-app = Flask(__name__, static_folder="static")
 
+app = Flask(__name__, static_folder="static")
 
 # ---------------------------
 # MongoDB Connection
 # ---------------------------
 try:
-    client = MongoClient("mongodb://localhost:27017/")
+    client = MongoClient("mongodb://mongodb:27017/")  # Change to use the MongoDB container name
     db = client["bookstore"]
     books_collection = db["books"]
 
