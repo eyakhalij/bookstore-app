@@ -5,14 +5,15 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the repository
-                git credentialsId: 'your-credentials-id', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
+                git credentialsId: 'github-credentials', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
                 // Build the Docker image using docker-compose
-                sh 'docker-compose build'
+            sh 'docker build -t bookstore-app:latest .'
+
             }
         }
 
