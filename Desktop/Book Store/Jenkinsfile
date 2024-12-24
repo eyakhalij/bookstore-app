@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'bookstore-app'
+        DOCKER_REGISTRY = 'index.docker.io'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build Application') {
+            steps {
+                sh 'docker build -t ${IMAGE_NAME}:latest .'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests...'
+                // Add test commands here if applicable
+            }
+        }
+        stage('Push to Docker Registry') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-credentials', url: "https://${DOCKER_REGISTRY}"]) {
+                    sh 'docker push ${IMAGE_NAME}:latest'
+                }
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f k8s/'
+            }
+        }
+    }
+}
