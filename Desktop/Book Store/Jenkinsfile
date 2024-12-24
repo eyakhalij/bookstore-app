@@ -12,13 +12,14 @@ pipeline {
         stage('Build') {
             steps {
                 // Build the Docker image using docker-compose
-                sh 'docker-compose build'
+                // Make sure to replace the absolute path with the correct one on your Jenkins server
+                sh 'docker-compose -f "/c/Users/Eya/Desktop/Book Store/docker-compose.yml" build'
             }
         }
 
         stage('Test') {
             steps {
-                // Run tests (if applicable)
+                // Run tests 
                 sh './run_tests.sh'
             }
         }
@@ -26,7 +27,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 // Deploy the application using docker-compose
-                sh 'docker-compose up -d'
+                // Make sure to replace the absolute path with the correct one on your Jenkins server
+                sh 'docker-compose -f "/c/Users/Eya/Desktop/Book Store/docker-compose.yml" up -d'
             }
         }
     }
