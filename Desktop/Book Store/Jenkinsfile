@@ -1,38 +1,32 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = 'bookstore-app'
-        DOCKER_REGISTRY = 'index.docker.io'
-    }
-
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
-                checkout scm
+                // Checkout the repository
+                git credentialsId: 'your-credentials-id', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
             }
         }
-        stage('Build Application') {
+
+        stage('Build') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME}:latest .'
+                // Build the Docker image using the correct context and path to Dockerfile
+                sh 'docker build -t bookstore-app:latest "Desktop/Book Store/"'
             }
         }
-        stage('Run Tests') {
+
+        stage('Test') {
             steps {
-                echo 'Running tests...'
-                // Add test commands here if applicable
+                // Run tests (if applicable)
+                sh './run_tests.sh'
             }
         }
-        stage('Push to Docker Registry') {
+
+        stage('Deploy') {
             steps {
-                withDockerRegistry([credentialsId: 'docker-credentials', url: "https://${DOCKER_REGISTRY}"]) {
-                    sh 'docker push ${IMAGE_NAME}:latest'
-                }
-            }
-        }
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'kubectl apply -f k8s/'
+                // Deploy the application (this can vary based on your setup)
+                sh './deploy.sh'
             }
         }
     }
