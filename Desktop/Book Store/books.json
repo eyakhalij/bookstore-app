@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "title": "The Catcher in the Rye",
+        "author": "J.D. Salinger",
+        "price": 10.99,
+        "image": "/static/images/8125BDk3l9L.jpg",
+        "description": "A novel about teenage rebellion and alienation."
+    },
+    {
+        "id": 2,
+        "title": "1984",
+        "author": "George Orwell",
+        "price": 14.99,
+        "image": "/static/images/61NAx5pd6XL.jpg",
+        "description": "A dystopian novel about totalitarianism."
+    },
+    {
+        "id": 3,
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee",
+        "price": 12.99,
+        "image": "/static/images/images.png",
+        "description": "A story about racial injustice and moral growth."
+    }
+]
