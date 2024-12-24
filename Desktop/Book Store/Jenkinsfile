@@ -4,16 +4,15 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the repository
+                // Checkout the repository using the correct credentials ID
                 git credentialsId: 'github-credentials', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
-                // Build the Docker image using docker-compose
-            sh 'docker build -t bookstore-app:latest .'
-
+                // Build the Docker image using the correct context and path to Dockerfile
+                sh 'docker build -t bookstore-app:latest .'
             }
         }
 
