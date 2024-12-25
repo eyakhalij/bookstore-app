@@ -4,7 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm  // Checkout the code from the Git repository
+                // Clone the repository
+                git credentialsId: 'github-credentials', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
             }
         }
 
@@ -17,10 +18,10 @@ pipeline {
 
         stage('Test') {
             steps {
+                // List files in the workspace to check if run_tests.sh is present
+                sh 'ls -l'
                 // Ensure that run_tests.sh is executable
                 sh 'chmod +x run_tests.sh'
-                // Check the files in the workspace to verify if run_tests.sh exists
-                sh 'ls -l'
                 // Run the test script
                 sh './run_tests.sh'
             }
