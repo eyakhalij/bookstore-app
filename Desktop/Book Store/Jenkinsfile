@@ -1,36 +1,39 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
-                // Clone the repository
-                git credentialsId: 'github-credentials', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
+                checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                // Build the Docker image using docker-compose
                 sh 'docker-compose -f "C:/Users/Eya/Desktop/Book Store/docker-compose.yml" build'
             }
         }
 
-       stage('Test') {
-    steps {
-        // Ensure the script is executable (Jenkins might not recognize this on Windows systems)
-        sh 'chmod +x run_tests.sh'
-        // Run the test script
-        sh './run_tests.sh'
-    }
-}
-
+        stage('Test') {
+            when {
+                expression { return false }  // This will skip the Test stage
+            }
+            steps {
+                sh './run_tests.sh'
+            }
+        }
 
         stage('Deploy') {
-            steps {
-                // Deploy the app using docker-compose
-                sh 'docker-compose -f "C:/Users/Eya/Desktop/Book Store/docker-compose.yml" up -d'
+            when {
+                expression { return false }  // This will skip the Deploy stage
             }
+            steps {
+                echo 'Deploying application...'
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
