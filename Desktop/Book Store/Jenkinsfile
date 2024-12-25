@@ -16,14 +16,15 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                // Ensure that run_tests.sh is executable
-                sh 'chmod +x run_tests.sh'
-                // Run the test script
-                sh './run_tests.sh'
-            }
-        }
+       stage('Test') {
+    steps {
+        // Ensure the script is executable (Jenkins might not recognize this on Windows systems)
+        sh 'chmod +x run_tests.sh'
+        // Run the test script
+        sh './run_tests.sh'
+    }
+}
+
 
         stage('Deploy') {
             steps {
