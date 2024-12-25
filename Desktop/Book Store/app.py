@@ -52,10 +52,10 @@ except Exception as e:
 @app.route('/')
 def db_index():
     """Home route: Displays all books from MongoDB."""
-    books = list(books_collection.find())
+    books = list(books_collection.find())  # Fetch books only from MongoDB
     for book in books:
         book["_id"] = str(book["_id"])  # Convert ObjectId to string for rendering
-    return render_template('index_db.html', books=books)
+    return render_template('index_db.html', books=books)  # Render only from DB
 
 @app.route('/db/add', methods=['GET', 'POST'])
 def db_add():
@@ -76,15 +76,17 @@ def db_add():
                 "author": new_book["author"]
             })
             
-            if (existing_book):
+            if existing_book:
                 return f"Book '{new_book['title']}' by {new_book['author']} already exists.", 400
 
             books_collection.insert_one(new_book)
         except Exception as e:
+            print(f"Error adding book: {e}")
             return f"Error adding book: {e}", 500
         return redirect(url_for('db_index'))  # Redirect after adding
     
     return render_template('add_db.html')  # If GET request, render the add form
+
 
 @app.route('/db/edit/<string:id>', methods=('GET', 'POST'))
 def db_edit(id):

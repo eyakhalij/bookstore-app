@@ -1,28 +1,23 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  # Flask app
   bookstore-app:
-    build: .                      # Build the Dockerfile in the current directory
+    build: .
     ports:
-      - "5000:5000"                # Expose port 5000 for Flask
+      - "5000:5000"
     depends_on:
-      - mongodb                    # Ensure MongoDB starts before the app
+      - mongodb
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/  # MongoDB URI used in Flask app
-    volumes:
-      - .:/app                     # Mount the current directory to /app in the container
+      - MONGO_URI=mongodb://mongodb:27017/
 
-  # MongoDB container
   mongodb:
     image: mongo:latest
     container_name: bookstore-mongo
     ports:
-      - "27017:27017"               # Expose MongoDB's default port
+      - "27017:27017"
     volumes:
-      - mongodb_data:/data/db      # Persist MongoDB data
+      - mongodb_data:/data/db
 
-# Volumes for persisting MongoDB data
 volumes:
   mongodb_data:
     driver: local

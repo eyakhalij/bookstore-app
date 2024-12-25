@@ -11,35 +11,31 @@ class FlaskTestCase(unittest.TestCase):
         self.db = self.client["bookstore"]
         self.books_collection = self.db["books"]
 
-        # Clean up the database before running tests, keeping only 'Shatter Me'
-        self.books_collection.delete_many({"title": {"$ne": "Shatter Me"}})  # Keep only the book "Shatter Me"
-
     # Test index route
     def test_index(self):
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
 
     # Test add book functionality
-    def test_add_book(self):
-        new_book = {
-            'title': 'New Book',
-            'author': 'Author Name',
-            'price': 20.99,
-            'description': 'A new book description.',
-            'image': '/static/images/book.jpg'
-        }
+def test_add_book(self):
+    new_book = {
+        'title': 'New Book',
+        'author': 'Author Name',
+        'price': 20.99,
+        'description': 'A new book description.',
+        'image': '/static/images/book.jpg'
+    }
 
-        # Make the POST request to add the new book
-        response = self.app.post('/db/add', data=new_book)
+    # Make sure we are sending data correctly in the form format
+    response = self.app.post('/db/add', data=new_book, follow_redirects=True)
 
-        # Check if the status code is 302 (redirect)
-        self.assertEqual(response.status_code, 302)
+    # Check if the status code is 200 (or 302 if redirect)
+    self.assertEqual(response.status_code, 200)  # It might be 200 after redirect
 
-        # Ensure the new book appears on the homepage
-        response = self.app.get('/')
-        self.assertIn(b'New Book', response.data)  # Ensure the new book is added
+    # Ensure the new book appears on the homepage
+    response = self.app.get('/')
+    self.assertIn(b'New Book', response.data)  # Ensure the new book is added
 
-    # Test edit book functionality
     def test_edit_book(self):
         # Create and add a book first
         book = {
@@ -97,10 +93,6 @@ class FlaskTestCase(unittest.TestCase):
         # Ensure the book is no longer in the database
         deleted_book = self.books_collection.find_one({"_id": ObjectId(book_id)})
         self.assertIsNone(deleted_book)
-
-    # After tests, clean up database (if necessary)
-    def tearDown(self):
-        self.books_collection.delete_many({"title": {"$ne": "Shatter Me"}})  # Ensure that 'Shatter Me' is the only book left
 
 if __name__ == '__main__':
     unittest.main()
