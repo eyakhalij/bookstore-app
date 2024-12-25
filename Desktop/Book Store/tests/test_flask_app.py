@@ -1,6 +1,7 @@
 import unittest
 from app import app
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
@@ -9,6 +10,9 @@ class FlaskTestCase(unittest.TestCase):
         self.client = MongoClient('mongodb://localhost:27017/')
         self.db = self.client["bookstore"]
         self.books_collection = self.db["books"]
+
+        # Clean up the database before running tests, keeping only 'Shatter Me'
+        self.books_collection.delete_many({"title": {"$ne": "Shatter Me"}})  # Keep only the book "Shatter Me"
 
     # Test index route
     def test_index(self):
@@ -93,6 +97,10 @@ class FlaskTestCase(unittest.TestCase):
         # Ensure the book is no longer in the database
         deleted_book = self.books_collection.find_one({"_id": ObjectId(book_id)})
         self.assertIsNone(deleted_book)
+
+    # After tests, clean up database (if necessary)
+    def tearDown(self):
+        self.books_collection.delete_many({"title": {"$ne": "Shatter Me"}})  # Ensure that 'Shatter Me' is the only book left
 
 if __name__ == '__main__':
     unittest.main()
