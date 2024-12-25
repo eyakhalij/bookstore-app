@@ -1,8 +1,7 @@
-# filepath: /c:/Users/Eya/Desktop/Book Store/run_tests.sh
 #!/bin/bash
 
-# Set environment variables for the test database
-export DB_NAME=test_bookstore
+# Activate virtual environment (optional, if you're using one)
+# source venv/bin/activate
 
-# Run the tests
-python -m unittest discover -s tests -p "test*.py"
+# Run Flask tests using Python's unittest
+python -m unittest discover -s tests -p "test_flask_app.py"

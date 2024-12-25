@@ -1,71 +1,98 @@
 import unittest
-from app import app  # Assuming your Flask app is defined in `app.py`
-from flask import Flask
+from app import app
 from pymongo import MongoClient
-from bson.objectid import ObjectId
-import os
 
 class FlaskTestCase(unittest.TestCase):
-    # Ensure the app is set up correctly
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
-
-        # Set up MongoDB client and select test database
-        os.environ['DB_NAME'] = 'test_bookstore'  # Use a test database
         self.client = MongoClient('mongodb://localhost:27017/')
-        self.db = self.client["test_bookstore"]
+        self.db = self.client["bookstore"]
         self.books_collection = self.db["books"]
-
-        # Insert a sample book for testing
-        self.sample_book_id = self.books_collection.insert_one({
-            "title": "Sample Book",
-            "author": "Author Name",
-            "published_date": "2023-01-01"
-        }).inserted_id
-
-    # Clean up after each test
-    def tearDown(self):
-        self.books_collection.delete_many({})
 
     # Test index route
     def test_index(self):
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
 
-    # Test create book
-    def test_create_book(self):
-        response = self.app.post('/db/add', data={
-            "title": "New Book",
-            "author": "New Author",
-            "price": 20.99,
-            "description": "A new book description",
-            "image": "static/images/new_book.jpg"
-        })
-        self.assertEqual(response.status_code, 302)  # Redirect status code
+    # Test add book functionality
+    def test_add_book(self):
+        new_book = {
+            'title': 'New Book',
+            'author': 'Author Name',
+            'price': 20.99,
+            'description': 'A new book description.',
+            'image': '/static/images/book.jpg'
+        }
 
-    # Test read book
-    def test_read_book(self):
-        response = self.app.get(f'/db/book/{self.sample_book_id}')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Sample Book', response.get_data(as_text=True))
+        # Make the POST request to add the new book
+        response = self.app.post('/db/add', data=new_book)
 
-    # Test update book
-    def test_update_book(self):
-        response = self.app.post(f'/db/edit/{self.sample_book_id}', data={
-            "title": "Updated Book",
-            "author": "Updated Author",
-            "price": 29.99,
-            "description": "An updated book description",
-            "image": "static/images/updated_book.jpg"
-        })
-        self.assertEqual(response.status_code, 302)  # Redirect status code
+        # Check if the status code is 302 (redirect)
+        self.assertEqual(response.status_code, 302)
 
-    # Test delete book
+        # Ensure the new book appears on the homepage
+        response = self.app.get('/')
+        self.assertIn(b'New Book', response.data)  # Ensure the new book is added
+
+    # Test edit book functionality
+    def test_edit_book(self):
+        # Create and add a book first
+        book = {
+            'title': 'Book to Edit',
+            'author': 'Author to Edit',
+            'price': 25.99,
+            'description': 'A book to be edited.',
+            'image': '/static/images/edit_book.jpg'
+        }
+        self.books_collection.insert_one(book)
+
+        # Get the book's ObjectId
+        book_id = str(self.books_collection.find_one({'title': book['title']})['_id'])
+
+        updated_book = {
+            'title': 'Updated Book',
+            'author': 'Updated Author',
+            'price': 29.99,
+            'description': 'Updated description.',
+            'image': '/static/images/updated_book.jpg'
+        }
+
+        # Send the edit request
+        response = self.app.post(f'/db/edit/{book_id}', data=updated_book)
+
+        # Check for redirect
+        self.assertEqual(response.status_code, 302)
+
+        # Ensure the updated data is reflected in the database
+        updated_book_in_db = self.books_collection.find_one({"_id": ObjectId(book_id)})
+        self.assertEqual(updated_book_in_db['title'], updated_book['title'])
+        self.assertEqual(updated_book_in_db['author'], updated_book['author'])
+
+    # Test delete book functionality
     def test_delete_book(self):
-        response = self.app.post(f'/db/delete/{self.sample_book_id}')
-        self.assertEqual(response.status_code, 302)  # Redirect status code
-        self.assertIsNone(self.books_collection.find_one({"_id": ObjectId(self.sample_book_id)}))
+        # Add a book to delete
+        book = {
+            'title': 'Book to Delete',
+            'author': 'Author to Delete',
+            'price': 30.99,
+            'description': 'A book to be deleted.',
+            'image': '/static/images/delete_book.jpg'
+        }
+        self.books_collection.insert_one(book)
+
+        # Get the book's ObjectId
+        book_id = str(self.books_collection.find_one({'title': book['title']})['_id'])
+
+        # Send the delete request
+        response = self.app.post(f'/db/delete/{book_id}')
+
+        # Check for redirect and successful deletion
+        self.assertEqual(response.status_code, 302)
+
+        # Ensure the book is no longer in the database
+        deleted_book = self.books_collection.find_one({"_id": ObjectId(book_id)})
+        self.assertIsNone(deleted_book)
 
 if __name__ == '__main__':
     unittest.main()

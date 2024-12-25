@@ -1,49 +1,30 @@
-// filepath: /c:/Users/Eya/Desktop/Book Store/Jenkinsfile
 pipeline {
     agent any
-
-    environment {
-        MONGO_URI = 'mongodb://localhost:27017/'
-        DB_NAME = 'bookstore'
-    }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the repository using the correct credentials ID
                 git credentialsId: 'github-credentials', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
-                // Build the Docker image using docker-compose
-                // Using the absolute path to docker-compose.yml
                 sh 'docker-compose -f "C:/Users/Eya/Desktop/Book Store/docker-compose.yml" build'
             }
         }
 
         stage('Test') {
             steps {
-                // Run tests using the absolute path to the test script
-                sh 'sh "C:/Users/Eya/Desktop/Book Store/run_tests.sh"'
+                sh 'chmod +x C:/Users/Eya/Desktop/Book Store/run_tests.sh'
+                sh 'C:/Users/Eya/Desktop/Book Store/run_tests.sh'
             }
         }
 
         stage('Deploy') {
-            when {
-                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
-            }
             steps {
-                // Deploy using docker-compose with absolute path to the yaml file
                 sh 'docker-compose -f "C:/Users/Eya/Desktop/Book Store/docker-compose.yml" up -d'
             }
-        }
-    }
-
-    post {
-        always {
-            cleanWs()
         }
     }
 }

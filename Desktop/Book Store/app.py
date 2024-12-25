@@ -9,8 +9,11 @@ app = Flask(__name__, static_folder="static")
 # MongoDB Connection
 # ---------------------------
 try:
-    client = MongoClient("mongodb://mongodb:27017/")  # Change to use the MongoDB container name
-    db = client["bookstore"]
+    # Get the MongoDB URI and database name from environment variables
+    mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
+    db_name = os.getenv('DB_NAME', 'bookstore')
+    client = MongoClient(mongo_uri)
+    db = client[db_name]
     books_collection = db["books"]
 
     # Ensure sample data is loaded (only for initial setup)
@@ -54,8 +57,7 @@ def db_index():
         book["_id"] = str(book["_id"])  # Convert ObjectId to string for rendering
     return render_template('index_db.html', books=books)
 
-
-@app.route('/db/add', methods=('GET', 'POST'))
+@app.route('/db/add', methods=['GET', 'POST'])
 def db_add():
     """Route to add a new book to MongoDB."""
     if request.method == 'POST':
@@ -67,13 +69,22 @@ def db_add():
                 "description": request.form.get('description'),
                 "image": request.form.get('image')
             }
+
+            # Check if the book already exists in the collection
+            existing_book = books_collection.find_one({
+                "title": new_book["title"],
+                "author": new_book["author"]
+            })
+            
+            if (existing_book):
+                return f"Book '{new_book['title']}' by {new_book['author']} already exists.", 400
+
             books_collection.insert_one(new_book)
         except Exception as e:
             return f"Error adding book: {e}", 500
-        return redirect(url_for('db_index'))
-
-    return render_template('add_db.html')
-
+        return redirect(url_for('db_index'))  # Redirect after adding
+    
+    return render_template('add_db.html')  # If GET request, render the add form
 
 @app.route('/db/edit/<string:id>', methods=('GET', 'POST'))
 def db_edit(id):
@@ -96,7 +107,6 @@ def db_edit(id):
 
     return render_template('edit_db.html', book=book)
 
-
 @app.route('/db/delete/<string:id>', methods=('POST',))
 def db_delete(id):
     """Route to delete a book from MongoDB."""
@@ -105,7 +115,6 @@ def db_delete(id):
     except Exception as e:
         return f"Error deleting book: {e}", 500
     return redirect(url_for('db_index'))
-
 
 @app.route('/db/book/<string:id>')
 def db_book_details(id):
@@ -131,11 +140,8 @@ def debug():
     """Debug route for testing."""
     return app.send_static_file('images/8125BDk3l9L.jpg')
 
-
 # ---------------------------
 # Run the App
 # ---------------------------
-
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
