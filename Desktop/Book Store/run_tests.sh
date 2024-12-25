@@ -5,4 +5,4 @@
 export DB_NAME=test_bookstore
 
 # Run the tests
-python -m unittest discover
+python -m unittest discover -s tests -p "test*.py"
