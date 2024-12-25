@@ -1,30 +1,35 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                // Clone the repository
+                git credentialsId: 'github-credentials', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
             }
         }
+
         stage('Build') {
             steps {
-                sh 'docker-compose -f docker-compose.yml build'
+                // Build the Docker image using docker-compose
+                sh 'docker-compose -f "C:/Users/Eya/Desktop/Book Store/docker-compose.yml" build'
             }
         }
+
         stage('Test') {
             steps {
-                sh 'python -m unittest discover -s tests -p "test_flask_app.py"'
+                // Ensure that run_tests.sh is executable
+                sh 'chmod +x run_tests.sh'
+                // Run the test script
+                sh './run_tests.sh'
             }
         }
+
         stage('Deploy') {
             steps {
-                // Deploy your app here, adjust this part based on your environment.
+                // Deploy the app using docker-compose
+                sh 'docker-compose -f "C:/Users/Eya/Desktop/Book Store/docker-compose.yml" up -d'
             }
-        }
-    }
-    post {
-        always {
-            cleanWs()
         }
     }
 }
