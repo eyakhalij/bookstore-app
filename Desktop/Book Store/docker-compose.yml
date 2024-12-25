@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8'  # You can remove this line to avoid the warning
 
 services:
   bookstore-app:

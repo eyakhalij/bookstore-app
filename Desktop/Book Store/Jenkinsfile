@@ -4,8 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Clone the repository
-                git credentialsId: 'github-credentials', url: 'https://github.com/eyaakhalij/bookstore-app.git', branch: 'main'
+                checkout scm  // Checkout the code from the Git repository
             }
         }
 
@@ -19,9 +18,11 @@ pipeline {
         stage('Test') {
             steps {
                 // Ensure that run_tests.sh is executable
-                sh 'chmod +x "C:/Users/Eya/Desktop/Book Store/run_tests.sh"'
+                sh 'chmod +x run_tests.sh'
+                // Check the files in the workspace to verify if run_tests.sh exists
+                sh 'ls -l'
                 // Run the test script
-                sh '"C:/Users/Eya/Desktop/Book Store/run_tests.sh"'
+                sh './run_tests.sh'
             }
         }
 
