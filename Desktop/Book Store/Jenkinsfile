@@ -18,8 +18,6 @@ pipeline {
 
         stage('Test') {
             steps {
-                // List files in the workspace to check if run_tests.sh is present
-                sh 'ls -l'
                 // Ensure that run_tests.sh is executable
                 sh 'chmod +x run_tests.sh'
                 // Run the test script
