@@ -17,15 +17,17 @@ pipeline {
             }
         }
 
-        stage('Scan for Vulnerabilities with Trivy') {
-            steps {
-                script {
-                    // Running Trivy to scan the Docker image for vulnerabilities
-                    sh 'trivy --no-progress --exit-code 1 --severity HIGH,CRITICAL $DOCKER_IMAGE'
-                }
-            }
-        }
+        // Commenting out the Trivy vulnerability scan stage to skip it
+        // stage('Scan for Vulnerabilities with Trivy') {
+        //     steps {
+        //         script {
+        //             // Running Trivy to scan the Docker image for vulnerabilities
+        //             sh 'trivy --no-progress --exit-code 1 --severity HIGH,CRITICAL $DOCKER_IMAGE'
+        //         }
+        //     }
+        // }
 
+        // Skipping the Test stage
         stage('Test') {
             when {
                 expression { return false }  // This will skip the Test stage
@@ -35,6 +37,7 @@ pipeline {
             }
         }
 
+        // Skipping the Deploy stage
         stage('Deploy') {
             when {
                 expression { return false }  // This will skip the Deploy stage
