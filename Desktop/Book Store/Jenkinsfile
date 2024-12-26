@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_REGISTRY = "docker.io"
+        DOCKER_IMAGE = "eyakhalij/bookstore"
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -10,6 +14,15 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'docker-compose -f "C:/Users/Eya/Desktop/Book Store/docker-compose.yml" build'
+            }
+        }
+
+        stage('Scan for Vulnerabilities with Trivy') {
+            steps {
+                script {
+                    // Running Trivy to scan the Docker image for vulnerabilities
+                    sh 'trivy --no-progress --exit-code 1 --severity HIGH,CRITICAL $DOCKER_IMAGE'
+                }
             }
         }
 
