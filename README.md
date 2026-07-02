@@ -87,6 +87,63 @@ python app.py
 bash run_tests.sh
 
 ---
+---
+
+## Tech Stack
+
+| Component | Technology |
+|---|---|
+| **Backend** | Python, Flask |
+| **Frontend** | HTML/CSS (templates/), static assets |
+| **Database** | SQLite |
+| **Reverse Proxy** | Nginx |
+| **Containerisation** | Docker, Docker Compose |
+| **Orchestration** | Kubernetes |
+| **CI/CD** | Jenkins |
+| **Testing** | Automated test suite (tests/) |
+
+---
+
+## Key Features
+
+- Browse and manage a book catalogue
+- Full CRUD operations via Flask REST backend
+- Nginx reverse proxy for production-grade request handling
+- Dockerised with multi-container support via docker-compose
+- Kubernetes deployment manifest for scalable orchestration
+- Jenkins pipeline with automated test execution before deployment
+- Automated test runner script (run_tests.sh)
+
+---
+
+## CI/CD Pipeline
+
+The Jenkins pipeline (Jenkinsfile) automates the full delivery process:
+
+1. **Build** — Docker image is built from the Dockerfile
+2. **Test** — automated tests run via run_tests.sh
+3. **Deploy** — if tests pass, the app is deployed via Kubernetes
+
+---
+
+## Local Setup
+
+### Run with Docker Compose
+
+docker-compose up --build
+
+The app will be available at http://localhost
+
+### Run without Docker
+
+pip install -r requirements.txt
+python app.py
+
+### Run tests
+
+bash run_tests.sh
+
+---
 
 ## Project Structure
 
@@ -105,6 +162,10 @@ bash run_tests.sh
 └── tests/                 # Automated test suite
 
 ---
+
+## What I Learned
+
+This project was built to develop hands-on experience with the full DevOps lifecycle — moving beyond writing application code to understanding how software is containerised, tested automatically, and deployed reliably at scale using industry-standard tooling.
 
 ## What I Learned
 
